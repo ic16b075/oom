@@ -4,17 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Task2
+namespace Task3
 {
-    class Dvd
+    class Film : InterfaceItem
     {
         /* private fields */
-       
+
         private double price;
-        
+
 
         /* constructor */
-        public Dvd(string new_title, double new_price, decimal new_release_year)
+        public Film(string new_title, double new_price, decimal new_release_year)
         {
             if (string.IsNullOrWhiteSpace(new_title)) throw new ArgumentException("Title must not be empty!", nameof(new_title));
 

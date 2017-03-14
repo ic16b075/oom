@@ -4,35 +4,36 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Task2
+namespace Task3
 {
-    class Dvd
+    class Season : InterfaceItem
     {
         /* private fields */
-       
+
         private double price;
-        
 
         /* constructor */
-        public Dvd(string new_title, double new_price, decimal new_release_year)
+        public Season(string new_title, decimal new_season_number, double new_price, decimal new_release_year)
         {
+            /*Exception Handling*/
             if (string.IsNullOrWhiteSpace(new_title)) throw new ArgumentException("Title must not be empty!", nameof(new_title));
-
+            if (new_season_number < 0) throw new ArgumentOutOfRangeException("Enter a positive value for season number!");
             if (new_release_year < 1888) throw new ArgumentOutOfRangeException("Enter valid release year!");
 
             Title = new_title;
+            Season_number = new_season_number;
             UpdatePrice(new_price);
             Release_year = new_release_year;
         }
 
         /* public properties */
         public string Title { get; }
+        public decimal Season_number { get; }
         //public double Price { get;  }
         public decimal Release_year { get; }
 
         public double GetPrice()
         {
-
             return price;
         }
 
