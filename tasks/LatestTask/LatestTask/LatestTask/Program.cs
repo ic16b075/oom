@@ -14,7 +14,7 @@ namespace LatestTask
         {
             var items = new InterfaceItem[]
             {
-            new Film("Adams Aepfel", 5.99, 2005, true),
+            new Film("Adams Aepfel", 5.99, 2005, false),
             new Film("Headhunters", 9.99, 2011, true),
             new Film("In China essen sie Hunde", 2.99, 1999, true),
             new Season("Archer", 1, 7.90, 2009, true),

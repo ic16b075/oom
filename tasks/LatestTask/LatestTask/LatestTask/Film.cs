@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace LatestTask
 {
@@ -27,6 +28,22 @@ namespace LatestTask
             Release_year = new_release_year;
             UpdateSoldStatus(new_status);
         }
+        
+        [JsonConstructor]
+        public Film(string title, double price, decimal release_year)
+        {
+            if (string.IsNullOrWhiteSpace(title)) throw new ArgumentException("Title must not be empty!", nameof(title));
+
+            if (release_year < 1888) throw new ArgumentOutOfRangeException("Enter valid release year!");
+            if (price < 0) throw new ArgumentOutOfRangeException("Enter valid price!");
+
+
+            Title = title;
+            Price = price;
+            Release_year = release_year;
+            //UpdateSoldStatus(new_status);
+        }
+        
 
         /* public properties */
         public string Title { get; set; }
