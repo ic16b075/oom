@@ -9,38 +9,41 @@ namespace LatestTask
     class Film : InterfaceItem
     {
         /* private fields */
-
-        private double price;
+        /*true = storing, false = sold out*/
+        private bool status;
 
 
         /* constructor */
-        public Film(string new_title, double new_price, decimal new_release_year)
+        public Film(string new_title, double new_price, decimal new_release_year, bool new_status)
         {
             if (string.IsNullOrWhiteSpace(new_title)) throw new ArgumentException("Title must not be empty!", nameof(new_title));
 
             if (new_release_year < 1888) throw new ArgumentOutOfRangeException("Enter valid release year!");
+            if (new_price < 0) throw new ArgumentOutOfRangeException("Enter valid price!");
+
 
             Title = new_title;
-            UpdatePrice(new_price);
+            Price = new_price;
             Release_year = new_release_year;
+            UpdateSoldStatus(new_status);
         }
 
         /* public properties */
-        public string Title { get; }
+        public string Title { get; set; }
         //public double Price { get;  }
-        public decimal Release_year { get; }
+        public decimal Release_year { get; set; }
+        // TODO: mit Set und Exception Handling -> UpdatePrice
+        public double Price { get; set; }
 
-        public double GetPrice()
+        public bool GetStatus()
         {
-
-            return price;
+            return status;
         }
 
         /* public method */
-        public void UpdatePrice(double updated_new_pice)
+        public void UpdateSoldStatus(bool new_status)
         { /* update price with exception price < 0 */
-            if (updated_new_pice < 0) throw new ArgumentException("Enter non-negative price!", nameof(updated_new_pice));
-            price = updated_new_pice;
+            status = new_status;
         }
     }
 }

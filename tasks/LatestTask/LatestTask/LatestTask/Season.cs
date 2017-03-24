@@ -10,10 +10,10 @@ namespace LatestTask
     {
         /* private fields */
 
-        private double price;
+        private bool status;
 
         /* constructor */
-        public Season(string new_title, decimal new_season_number, double new_price, decimal new_release_year)
+        public Season(string new_title, decimal new_season_number, double new_price, decimal new_release_year, bool new_status)
         {
             /*Exception Handling*/
             if (string.IsNullOrWhiteSpace(new_title)) throw new ArgumentException("Title must not be empty!", nameof(new_title));
@@ -22,26 +22,30 @@ namespace LatestTask
 
             Title = new_title;
             Season_number = new_season_number;
-            UpdatePrice(new_price);
+            Price = new_price;
             Release_year = new_release_year;
+            UpdateSoldStatus(new_status);
         }
 
         /* public properties */
-        public string Title { get; }
-        public decimal Season_number { get; }
+        public string Title { get; set; }
+        public decimal Season_number { get; set; }
         //public double Price { get;  }
-        public decimal Release_year { get; }
+        public decimal Release_year { get; set; }
 
-        public double GetPrice()
+        // TODO: mit Set und Exception Handling -> UpdatePrice
+        public double Price { get; set; }
+
+        public bool GetStatus()
         {
-            return price;
+            return status;
         }
 
+
         /* public method */
-        public void UpdatePrice(double updated_new_pice)
+        public void UpdateSoldStatus(bool new_status)
         { /* update price with exception price < 0 */
-            if (updated_new_pice < 0) throw new ArgumentException("Enter non-negative price!", nameof(updated_new_pice));
-            price = updated_new_pice;
+            status = new_status;
         }
     }
 }

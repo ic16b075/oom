@@ -13,11 +13,13 @@ namespace LatestTask
         [Test]
         public void CanCreateFilm()
         {
-            var x = new Film("TestName", 42.24, 1992);
+            var x = new Film("TestName", 42.24, 1992, true);
 
             Assert.IsTrue(x.Title == "TestName");
-            Assert.IsTrue(x.GetPrice() == 42.24);
+            Assert.IsTrue(x.Price == 42.24);
             Assert.IsTrue(x.Release_year == 1992);
+            Assert.IsTrue(x.GetStatus() == true); 
+
         }
 
         [Test]
@@ -25,7 +27,7 @@ namespace LatestTask
         {
             Assert.Catch(() =>
             {
-                var x = new Film(null, 42.24, 1992);
+                var x = new Film(null, 42.24, 1992, true);
             });
         }
 
@@ -34,7 +36,7 @@ namespace LatestTask
         {
             Assert.Catch(() =>
             {
-                var x = new Film("", 42.24, 1992);
+                var x = new Film("", 42.24, 1992, true);
             });
         }
 
@@ -43,7 +45,7 @@ namespace LatestTask
         {
             Assert.Catch(() =>
             {
-                var x = new Film(" ", 42.24, 1992);
+                var x = new Film(" ", 42.24, 1992, true);
             });
         }
         
@@ -52,7 +54,7 @@ namespace LatestTask
         {
             Assert.Catch(() =>
             {
-                var x = new Film("TestName", 42.24, 1887);
+                var x = new Film("TestName", 42.24, 1887, true);
             });
         }
         
@@ -61,7 +63,7 @@ namespace LatestTask
         {
             Assert.Catch(() =>
             {
-                var x = new Film("TestName", -42.24, 1992);
+                var x = new Film("TestName", -42.24, 1992, true);
             });
         }
     }

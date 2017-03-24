@@ -14,10 +14,10 @@ namespace LatestTask
         [Test]
         public void CanCreateSeason()
         {
-            var x = new Season("TestName", 1, 13.37, 2020);
+            var x = new Season("TestName", 1, 13.37, 2020, true);
 
             Assert.IsTrue(x.Title == "TestName");
-            Assert.IsTrue(x.GetPrice() == 13.37);
+            Assert.IsTrue(x.GetStatus() == true);
             Assert.IsTrue(x.Release_year == 2020);
             Assert.IsTrue(x.Season_number == 1);
         }
@@ -27,7 +27,7 @@ namespace LatestTask
         {
             Assert.Catch(() =>
             {
-                var x = new Season("TestName", 0, 13.37, 2020);
+                var x = new Season("TestName", 0, 13.37, 2020, true);
             });
         }
     }
