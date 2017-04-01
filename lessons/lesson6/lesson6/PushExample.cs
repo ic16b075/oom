@@ -21,11 +21,11 @@ namespace lesson6
 
             // Rx observables
             IObservable<Point> moves = Observable.FromEventPattern<MouseEventArgs>(w, "MouseMove").Select(x => x.EventArgs.Location);
-
-            //moves
-            //    .Subscribe(e => WriteLine($"[A] ({e.X}, {e.Y})"))
-            //    ;
-
+/*
+            moves
+                .Subscribe(e => WriteLine($"[A] ({e.X}, {e.Y})"))
+                ;
+*/
             //moves
             //    .DistinctUntilChanged()
             //    .Subscribe(e => WriteLine($"[B] ({e.X}, {e.Y})"))

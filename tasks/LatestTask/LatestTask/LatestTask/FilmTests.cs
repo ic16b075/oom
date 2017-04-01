@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace LatestTask
 {

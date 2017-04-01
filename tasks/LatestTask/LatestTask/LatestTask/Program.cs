@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using static System.Console; //needed for: WriteLine("somestring");
 
 namespace LatestTask
 {
@@ -67,6 +71,104 @@ namespace LatestTask
             foreach (var x in itemsFromFile)
                 Console.WriteLine(" {0} | {1} | {2} EUR", x.Title, x.Release_year, x.Price);
 
+            // Start of Lesson 6.1:
+            // IObservable: represents a producer of values
+            // IObserver represents a consumer of values
+
+            // create new 'producer' (IObservable) of type InterfaceItem
+            var producer = new Subject<InterfaceItem>();
+            // subscribe to producer
+            producer.Subscribe(x => Console.WriteLine($"received value {x}"));
+
+            // iterate over Array items which contains variables/interfaces of type InterfaceItem
+            foreach (var element in items)
+            {
+                // simulate a push of IObservable to subscriber every 1 second
+                System.Threading.Thread.Sleep(TimeSpan.FromSeconds(1));
+                producer.OnNext(element); // push an element to subscriber
+            }
+
+            // Start of Lesson 6.2:
+            /*Wie kann ich Task 6.1 einbauen um parallel zur Primzahlenrechnung zu laufen?*/
+
+            var random = new Random();
+
+            var xs = new[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+            var tasks = new List<Task<int>>();
+
+            foreach (var x in xs)
+            {
+                var task = Task.Run(() =>
+                {
+                    WriteLine($"computing result for {x}");
+                    Task.Delay(TimeSpan.FromSeconds(5.0 + random.Next(10))).Wait();
+                    WriteLine($"done computing result for {x}");
+                    return x * x;
+                });
+
+                tasks.Add(task);
+            }
+
+            WriteLine("doing something else ...");
+
+            var tasks2 = new List<Task<int>>();
+            foreach (var task in tasks.ToArray())
+            {
+                tasks2.Add(
+                    task.ContinueWith(t => { WriteLine($"result is {t.Result}"); return t.Result; })
+                );
+            }
+
+            var cts = new CancellationTokenSource();
+            var primeTask = ComputePrimes(cts.Token);
+
+            ReadLine();
+            cts.Cancel();
+            WriteLine("canceled ComputePrimes");
+
+            ReadLine();
+
+
+
+            /*
+            Console.WriteLine("Shows use of Start to start on a background thread:");
+            var o = Observable.Start(() =>
+            {
+                //This starts on a background thread.
+                Console.WriteLine("From background thread. Does not block main thread.");
+                Console.WriteLine("Calculating...");
+                Thread.Sleep(3000);
+                Console.WriteLine("Background work completed.");
+            }).Finally(() => Console.WriteLine("Main thread completed."));
+            Console.WriteLine("\r\n\t In Main Thread...\r\n");
+            o.Wait();   // Wait for completion of background operation.
+            */
+            WriteLine("End");
+
+
+
+
+        }
+        public static Task<bool> IsPrime(int x, CancellationToken ct)
+        {
+            return Task.Run(() =>
+            {
+                for (var i = 2; i < x - 1; i++)
+                {
+                    ct.ThrowIfCancellationRequested();
+                    if (x % i == 0) return false;
+                }
+                return true;
+            }, ct);
+        }
+
+        public static async Task ComputePrimes(CancellationToken ct)
+        {
+            for (var i = 100000000; i < int.MaxValue; i++)
+            {
+                ct.ThrowIfCancellationRequested();
+                if (await IsPrime(i, ct)) WriteLine($"prime number: {i}");
+            }
         }
     }
 }
