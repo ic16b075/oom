@@ -16,14 +16,6 @@ namespace LatestTask
     {
         public static void Main(string[] args)
         {
-            // Asynchrone Methode
-            AsyncWithAwait();
-            // Background Task
-            Task.Run(() => AsyncWithOutAwait());
-
-            //--------------------------------------------------------------
-
-            //Synchroner Programmablauf
             var items = new InterfaceItem[]
             {
             new Film("Adams Aepfel", 5.99, 2005, false),
@@ -55,7 +47,6 @@ namespace LatestTask
                 Console.WriteLine(" {0} | {1} | {2} EUR", element.Title, element.Release_year, element.GetPrice());
             }
 */
-            //---------------------------------------------------------------
             /*Lesson 4: Serialization*/
             var serialized = items[0];
 
@@ -80,15 +71,14 @@ namespace LatestTask
             foreach (var x in itemsFromFile)
                 Console.WriteLine(" {0} | {1} | {2} EUR", x.Title, x.Release_year, x.Price);
 
-            //-------------------------------------------------------------
-            // Lesson 6.1:
+            // Start of Lesson 6.1:
             // IObservable: represents a producer of values
             // IObserver represents a consumer of values
 
             // create new 'producer' (IObservable) of type InterfaceItem
             var producer = new Subject<InterfaceItem>();
             // subscribe to producer
-            producer.Subscribe(x => Console.WriteLine($"received value {x.Price}"));
+            producer.Subscribe(x => Console.WriteLine($"received value {x}"));
 
             // iterate over Array items which contains variables/interfaces of type InterfaceItem
             foreach (var element in items)
@@ -98,32 +88,87 @@ namespace LatestTask
                 producer.OnNext(element); // push an element to subscriber
             }
 
-            //----------------------------------------------------------
-            // Synchroner Ablauf bevor das Programm beendet
-            // damit asynchrone Abläufe genug Zeit haben um noch ausgeführt zu werden
-            WriteLine("Beliebige Eingabe: ");
-            string wort = Console.ReadLine();
-            WriteLine("Eingabe war: {0}", wort);
-            WriteLine("Synchrones Main-Programm-Ende.");
+            // Start of Lesson 6.2:
+            /*Wie kann ich Task 6.1 einbauen um parallel zur Primzahlenrechnung zu laufen?*/
+
+            var random = new Random();
+
+            var xs = new[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+            var tasks = new List<Task<int>>();
+
+            foreach (var x in xs)
+            {
+                var task = Task.Run(() =>
+                {
+                    WriteLine($"computing result for {x}");
+                    Task.Delay(TimeSpan.FromSeconds(5.0 + random.Next(10))).Wait();
+                    WriteLine($"done computing result for {x}");
+                    return x * x;
+                });
+
+                tasks.Add(task);
+            }
+
+            WriteLine("doing something else ...");
+
+            var tasks2 = new List<Task<int>>();
+            foreach (var task in tasks.ToArray())
+            {
+                tasks2.Add(
+                    task.ContinueWith(t => { WriteLine($"result is {t.Result}"); return t.Result; })
+                );
+            }
+
+            var cts = new CancellationTokenSource();
+            var primeTask = ComputePrimes(cts.Token);
+
+            ReadLine();
+            cts.Cancel();
+            WriteLine("canceled ComputePrimes");
+
+            ReadLine();
+
+
+
+            /*
+            Console.WriteLine("Shows use of Start to start on a background thread:");
+            var o = Observable.Start(() =>
+            {
+                //This starts on a background thread.
+                Console.WriteLine("From background thread. Does not block main thread.");
+                Console.WriteLine("Calculating...");
+                Thread.Sleep(3000);
+                Console.WriteLine("Background work completed.");
+            }).Finally(() => Console.WriteLine("Main thread completed."));
+            Console.WriteLine("\r\n\t In Main Thread...\r\n");
+            o.Wait();   // Wait for completion of background operation.
+            */
+            WriteLine("End");
+
 
 
 
         }
-        //Lesson 6.2
-
-        //Tipp: Task.Run ist sinvoll CPU-bound Tasks
-        public static void AsyncWithOutAwait()
+        public static Task<bool> IsPrime(int x, CancellationToken ct)
         {
-            Thread.Sleep(3000);
-            Console.WriteLine(">>> Task.Run Ausgabe! <<<");
+            return Task.Run(() =>
+            {
+                for (var i = 2; i < x - 1; i++)
+                {
+                    ct.ThrowIfCancellationRequested();
+                    if (x % i == 0) return false;
+                }
+                return true;
+            }, ct);
         }
-        //Tipp: Async mit Await ist sinvoll bei IO-bound Tasks
-        public static async Task AsyncWithAwait()
+
+        public static async Task ComputePrimes(CancellationToken ct)
         {
-            // awaitable wird asynchron abgewartet
-            // danach wird die asynchrone Funktion synchron weiter durchlaufen
-            await Task.Delay(5000);
-            Console.WriteLine("--- AsyncAwait Ausgabe! ---");
+            for (var i = 100000000; i < int.MaxValue; i++)
+            {
+                ct.ThrowIfCancellationRequested();
+                if (await IsPrime(i, ct)) WriteLine($"prime number: {i}");
+            }
         }
     }
 }
